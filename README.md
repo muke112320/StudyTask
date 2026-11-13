@@ -119,16 +119,15 @@ pytest -v
 
 ```powershell
 cd "C:\Users\muke\Desktop\软件工程实验一"
-tar -czf studytask.tar.gz --exclude=.venv --exclude=.git --exclude=studytask.db .
-scp studytask.tar.gz root@<服务器公网IP>:/root/
+tar -czf studytask.tar.gz --exclude=.venv --exclude=.git --exclude=studytask.db --exclude=.pytest_cache --exclude=__pycache__ .
+scp studytask.tar.gz admin@<服务器公网IP>:/tmp/
 ```
 
 **2. 服务器上解压**
 
 ```bash
-mkdir -p /opt/studytask
-tar -xzf /root/studytask.tar.gz -C /opt/studytask
-cd /opt/studytask
+sudo mkdir -p /opt/studytask
+sudo tar -xzf /tmp/studytask.tar.gz -C /opt/studytask
 ```
 
 **3. 一键部署**
@@ -144,9 +143,23 @@ sudo bash deploy/setup.sh
 ```bash
 systemctl status studytask
 curl -I http://127.0.0.1
+bash deploy/smoke_test.sh http://127.0.0.1     # 建任务→重启→校验持久化→清理数据
 ```
 
 浏览器访问 `http://<服务器公网IP>` 即可。
+
+### 本次部署实况
+
+| 项 | 值 |
+|---|---|
+| 访问地址 | <http://120.76.59.189> |
+| 服务器 | 腾讯云轻量应用服务器，Ubuntu 24.04.2 LTS，登录用户 `admin`（sudo 免密） |
+| 项目路径 | `/opt/studytask` |
+| 运行方式 | `studytask.service`（systemd）→ gunicorn 2 worker → `127.0.0.1:8000` → Nginx 反代 80 |
+| 数据文件 | `/opt/studytask/studytask.db` |
+| 部署时间 | 2026-11-13 |
+
+部署后自检结果：首页 200、创建返回 302、列表可见、重启服务后数据仍在（T10）、删除后清理成功。
 
 ### 常用运维命令
 
@@ -167,12 +180,18 @@ sudo systemctl stop studytask        # 停止
 本机重新打包上传，然后在服务器上：
 
 ```bash
-cd /opt/studytask
-tar -xzf /root/studytask.tar.gz -C /opt/studytask
+sudo tar -xzf /tmp/studytask.tar.gz -C /opt/studytask
+sudo chown -R studytask:studytask /opt/studytask
 sudo systemctl restart studytask
 ```
 
 `studytask.db` 在 `/opt/studytask` 下，不会因为更新代码被覆盖（解压包中不含该文件）。
+
+### 数据备份
+
+```bash
+sudo cp /opt/studytask/studytask.db /opt/studytask/studytask.db.$(date +%Y%m%d)
+```
 
 ## 已知限制
 
