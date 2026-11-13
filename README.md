@@ -105,6 +105,75 @@ pytest -v
 - **校验集中在数据层**：`db.validate_task()` 同时被新建和编辑复用，路由层不重复写规则。
 - **列表排序**：按截止日期升序，同日期按 id 升序，最紧急的排在最前。
 
+## 部署到云服务器
+
+### 服务器配置
+
+- 系统：Ubuntu 22.04 / 24.04 LTS
+- 规格：1 核 2G 起步即可（本项目为单用户演示）
+- 安全组放行：`22`（SSH）、`80`（HTTP）
+
+### 部署步骤
+
+**1. 本机打包（排除虚拟环境与数据库）**
+
+```powershell
+cd "C:\Users\muke\Desktop\软件工程实验一"
+tar -czf studytask.tar.gz --exclude=.venv --exclude=.git --exclude=studytask.db .
+scp studytask.tar.gz root@<服务器公网IP>:/root/
+```
+
+**2. 服务器上解压**
+
+```bash
+mkdir -p /opt/studytask
+tar -xzf /root/studytask.tar.gz -C /opt/studytask
+cd /opt/studytask
+```
+
+**3. 一键部署**
+
+```bash
+sudo bash deploy/setup.sh
+```
+
+脚本会依次完成：安装 python3-venv 与 nginx → 创建 `studytask` 运行用户 → 建虚拟环境并装依赖 → 生成随机 `SECRET_KEY` → 注册并启动 systemd 服务（gunicorn，监听 127.0.0.1:8000）→ 配置 Nginx 反代 80 端口。
+
+**4. 验证**
+
+```bash
+systemctl status studytask
+curl -I http://127.0.0.1
+```
+
+浏览器访问 `http://<服务器公网IP>` 即可。
+
+### 常用运维命令
+
+```bash
+sudo systemctl restart studytask     # 重启应用
+sudo journalctl -u studytask -f      # 查看日志
+sudo systemctl stop studytask        # 停止
+```
+
+### 关于备案
+
+- 用 **公网 IP 直接访问**（`http://1.2.3.4`）通常无需备案；
+- 绑定**域名**访问中国大陆服务器，必须先完成 ICP 备案（约 7~20 个工作日）；
+- 想免备案用域名：选中国香港/新加坡地域的服务器。
+
+### 更新代码
+
+本机重新打包上传，然后在服务器上：
+
+```bash
+cd /opt/studytask
+tar -xzf /root/studytask.tar.gz -C /opt/studytask
+sudo systemctl restart studytask
+```
+
+`studytask.db` 在 `/opt/studytask` 下，不会因为更新代码被覆盖（解压包中不含该文件）。
+
 ## 已知限制
 
 - 单用户本地使用，无登录与权限控制（符合 A.5 范围外约定）。

@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from flask import (Flask, abort, flash, redirect, render_template, request,
@@ -20,8 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent
 def create_app(test_config: dict | None = None) -> Flask:
     app = Flask(__name__)
     app.config.update(
-        SECRET_KEY="studytask-local-secret-key",
-        DATABASE=str(BASE_DIR / "studytask.db"),
+        SECRET_KEY=os.environ.get("STUDYTASK_SECRET", "studytask-local-secret-key"),
+        DATABASE=os.environ.get("STUDYTASK_DB", str(BASE_DIR / "studytask.db")),
         MAX_CONTENT_LENGTH=2 * 1024 * 1024,
     )
     if test_config:

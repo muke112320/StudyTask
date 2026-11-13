@@ -1,0 +1,20 @@
+[Unit]
+Description=StudyTask Flask app (gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=studytask
+Group=studytask
+WorkingDirectory=/opt/studytask
+Environment=STUDYTASK_SECRET=请替换为随机字符串
+ExecStart=/opt/studytask/.venv/bin/gunicorn -w 2 -b 127.0.0.1:8000 app:app
+Restart=always
+RestartSec=3
+
+# 基础加固：只允许写数据目录
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
