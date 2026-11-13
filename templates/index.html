@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}任务列表 · StudyTask{% endblock %}
+
+{% block content %}
+<section class="stats">
+  <div class="stat">
+    <span class="num">{{ stats.total }}</span>
+    <span class="label">任务总数</span>
+  </div>
+  <div class="stat">
+    <span class="num">{{ stats.done }}</span>
+    <span class="label">已完成</span>
+  </div>
+  <div class="stat">
+    <span class="num">{{ "%.0f"|format(stats.rate) }}%</span>
+    <span class="label">完成率</span>
+  </div>
+</section>
+
+<form class="filters" method="get" action="{{ url_for('index') }}">
+  <label>课程
+    <select name="course">
+      <option value="">全部课程</option>
+      {% for c in courses %}
+        <option value="{{ c }}" {% if filters.course == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>状态
+    <select name="status">
+      <option value="">全部状态</option>
+      {% for s in statuses %}
+        <option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>优先级
+    <select name="priority">
+      <option value="">全部优先级</option>
+      {% for p in priorities %}
+        <option value="{{ p }}" {% if filters.priority == p %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <button class="btn btn-primary" type="submit">筛选</button>
+  {% if is_filtered %}<a class="btn btn-ghost" href="{{ url_for('index') }}">重置</a>{% endif %}
+</form>
+
+{% if tasks %}
+<table class="tasks">
+  <thead>
+    <tr>
+      <th>任务名称</th>
+      <th>所属课程</th>
+      <th>截止日期</th>
+      <th>优先级</th>
+      <th>状态</th>
+      <th>提醒</th>
+      <th class="col-actions">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in tasks %}
+    <tr>
+      <td><a class="task-name" href="{{ url_for('task_detail', task_id=t.id) }}">{{ t.name }}</a></td>
+      <td>{{ t.course }}</td>
+      <td class="mono">{{ t.due_date }}</td>
+      <td><span class="pill pill-p-{{ t.priority }}">{{ t.priority }}</span></td>
+      <td><span class="pill pill-s-{{ t.status }}">{{ t.status }}</span></td>
+      <td>
+        {% if t.badge %}<span class="badge {{ t.badge_class }}">{{ t.badge }}</span>
+        {% else %}<span class="muted">—</span>{% endif %}
+      </td>
+      <td class="col-actions">
+        <a class="btn btn-small" href="{{ url_for('task_detail', task_id=t.id) }}">详情</a>
+        <a class="btn btn-small" href="{{ url_for('task_edit', task_id=t.id) }}">编辑</a>
+        <form class="inline" method="post" action="{{ url_for('task_delete', task_id=t.id) }}"
+              onsubmit="return confirm('确定要删除任务「{{ t.name }}」吗？此操作不可恢复。');">
+          <button class="btn btn-small btn-danger" type="submit">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">
+  {% if is_filtered %}
+    <p>当前筛选条件下没有任务。</p>
+    <a class="btn btn-ghost" href="{{ url_for('index') }}">清除筛选</a>
+  {% else %}
+    <p>还没有任务，先创建第一条吧。</p>
+    <a class="btn btn-primary" href="{{ url_for('task_new') }}">＋ 新建任务</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

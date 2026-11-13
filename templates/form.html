@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ "新建任务" if mode == "new" else "编辑任务" }} · StudyTask{% endblock %}
+
+{% block content %}
+<h2 class="page-title">{{ "新建任务" if mode == "new" else "编辑任务" }}</h2>
+
+{% if errors %}
+<div class="alert alert-error">提交失败，请检查下面标红的字段。</div>
+{% endif %}
+
+<form class="card form" method="post"
+      action="{{ url_for('task_new') if mode == 'new' else url_for('task_edit', task_id=task_id) }}">
+
+  <div class="field {{ 'has-error' if errors.name }}">
+    <label for="name">任务名称 <span class="req">*</span></label>
+    <input id="name" name="name" type="text" maxlength="100"
+           value="{{ task.get('name', '') }}" placeholder="例如：数据结构第三章作业">
+    {% if errors.name %}<p class="error">{{ errors.name }}</p>{% endif %}
+  </div>
+
+  <div class="field {{ 'has-error' if errors.course }}">
+    <label for="course">所属课程 <span class="req">*</span></label>
+    <input id="course" name="course" type="text" maxlength="60"
+           value="{{ task.get('course', '') }}" placeholder="例如：数据结构">
+    {% if errors.course %}<p class="error">{{ errors.course }}</p>{% endif %}
+  </div>
+
+  <div class="field {{ 'has-error' if errors.due_date }}">
+    <label for="due_date">截止日期 <span class="req">*</span></label>
+    <input id="due_date" name="due_date" type="date"
+           value="{{ task.get('due_date', '') }}">
+    {% if errors.due_date %}<p class="error">{{ errors.due_date }}</p>{% endif %}
+  </div>
+
+  <div class="row">
+    <div class="field {{ 'has-error' if errors.priority }}">
+      <label for="priority">优先级 <span class="req">*</span></label>
+      <select id="priority" name="priority">
+        {% for p in priorities %}
+          <option value="{{ p }}" {% if task.get('priority', '中') == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.priority %}<p class="error">{{ errors.priority }}</p>{% endif %}
+    </div>
+
+    <div class="field {{ 'has-error' if errors.status }}">
+      <label for="status">状态 <span class="req">*</span></label>
+      <select id="status" name="status">
+        {% for s in statuses %}
+          <option value="{{ s }}" {% if task.get('status', '待完成') == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.status %}<p class="error">{{ errors.status }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="field {{ 'has-error' if errors.description }}">
+    <label for="description">任务描述</label>
+    <textarea id="description" name="description" rows="5" maxlength="1000"
+              placeholder="可选，不超过 1000 字">{{ task.get('description', '') }}</textarea>
+    {% if errors.description %}<p class="error">{{ errors.description }}</p>{% endif %}
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" type="submit">保存</button>
+    <a class="btn btn-ghost"
+       href="{{ url_for('index') if mode == 'new' else url_for('task_detail', task_id=task_id) }}">取消</a>
+  </div>
+</form>
+{% endblock %}
