@@ -208,8 +208,11 @@ sudo cp /opt/studytask/studytask.db /opt/studytask/studytask.db.$(date +%Y%m%d)
 | 演示 PPT | `docs/演示PPT.pptx` | 10 页，现场演示用 |
 | 部署脚本 | `deploy/` | setup.sh、systemd、nginx、自检脚本 |
 
+> GitHub 无法预览 docx/pptx，仓库内已附同名 PDF（`docs/*.pdf`）供在线查看；提交给老师时仍使用 docx/pptx 原件。
+
 ## 已知限制
 
 - 单用户本地使用，无登录与权限控制（符合 A.5 范围外约定）。
 - 未做分页，任务量很大时列表会变长（200 条规模内操作正常）。
 - 使用 Flask 开发服务器，仅适合本机演示。
+
