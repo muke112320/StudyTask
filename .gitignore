@@ -9,3 +9,5 @@ __pycache__/
 .idea/
 *.log
 *.tar.gz
+/实验报告.docx
+/演示PPT.pptx
