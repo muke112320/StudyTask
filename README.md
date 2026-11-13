@@ -5,6 +5,8 @@
 - 技术栈：Python 3.13 + Flask 3.1 + SQLite（原生 HTML/CSS/JS，无前端框架）
 - 运行方式：本机启动服务，浏览器访问 `http://127.0.0.1:5000`
 - 数据存储：项目根目录下的 `studytask.db`（SQLite 文件）
+- 代码仓库：<https://github.com/muke112320/StudyTask>
+- 在线访问：<http://120.76.59.189>
 
 ## 功能清单
 
