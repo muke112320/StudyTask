@@ -193,6 +193,19 @@ sudo systemctl restart studytask
 sudo cp /opt/studytask/studytask.db /opt/studytask/studytask.db.$(date +%Y%m%d)
 ```
 
+## 交付材料
+
+| 材料 | 路径 | 说明 |
+|---|---|---|
+| 可运行源代码 | `app.py`、`db.py`、`templates/`、`static/` | Flask + SQLite 完整实现 |
+| 依赖清单 | `requirements.txt`、`requirements-prod.txt` | 开发 / 生产（含 gunicorn） |
+| 测试 | `tests/test_acceptance.py` | T1~T10 + 5 条回归，15 passed |
+| 需求验收表 | `docs/需求验收表.docx` | T1~T10 手工验收截图 |
+| AI 过程记录 | `docs/AI_DEV_LOG.md` | 提示词、问题定位、修复过程 |
+| 实验报告 | `docs/实验报告.docx` | 3 页，含设计、问题、验收、部署 |
+| 演示 PPT | `docs/演示PPT.pptx` | 10 页，现场演示用 |
+| 部署脚本 | `deploy/` | setup.sh、systemd、nginx、自检脚本 |
+
 ## 已知限制
 
 - 单用户本地使用，无登录与权限控制（符合 A.5 范围外约定）。
